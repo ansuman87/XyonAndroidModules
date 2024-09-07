@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:padding="@dimen/generic_margin"
+        android:background="?android:attr/selectableItemBackground">
+        <!-- the following renders the click event void (wasted a day)
+         recyclerview is by default clickable-->
+        <!--android:clickable="true"
+        android:focusable="true"
+        -->
+
+        <TextView
+            android:id="@+id/tv_wifi_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:textSize="@dimen/list_item_size" />
+
+        <ImageView
+            android:id="@+id/iv_wifi_rssi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_wifi" />
+
+        <ImageView
+            android:id="@+id/iv_wifi_security"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/dist_lock_rssi_widgets"
+            android:layout_toStartOf="@id/iv_wifi_rssi"
+            android:src="@drawable/ic_lock" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

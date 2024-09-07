@@ -1,0 +1,52 @@
+<resources>
+    <string name="app_name">DeviceConfig</string>
+
+    <string name="button_next">Next</string>
+
+    <string name="dialog_title_provisioning">Provisioning Mode</string>
+    <string name="dialog_message_provisioning">Confirm Wifi as the preferred mode.</string>
+    <string name="dialog_title_connection_retry">CONNECTION TIMEOUT</string>
+    <string name="dialog_title_download_failed">ERROR DOWNLOADING</string>
+    <string name="dialog_message_permission_qr_scanning">REQUIRED FOR SCANNING QR-CODE: Please grant access to use Camera</string>
+    <string name="dialog_message_download_failed">Something went wrong. Try again?</string>
+    <string name="dialog_title_network_info">Enter Network Information</string>
+    <string name="dialog_title_device_disconnected">Device disconnected!</string>
+    <string name="dialog_message_device_disconnected">Please check the connection. Go back and try again.</string>
+
+
+    <string name="snackbar_message_permission_qr_scanning">Camera Access mandatory for QR-Code Scanning. It can be denied later.</string>
+    <string name="snackbar_message_provision_success">Device added successfully!</string>
+
+    <string name="loading_message_refresh">refresh</string>
+    <string name="loading_message_fetching_pop">fetching details…</string>
+    <string name="loading_message_scanning">scanning…</string>
+    <string name="loading_message_connecting">connecting…</string>
+    <string name="loading_message_handshaking">verifying…</string>   <!-- confirming?? / sending confirmation -->
+
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="decline">Decline</string>
+    <string name="accept">Accept</string>
+
+    <string name="networks">Networks</string>
+    <string name="join_other_network">Join Other Network</string>
+    <string name="error_msg_no_network">Error getting network list.\n Please refresh. \n Also, check the connection to the device.</string>
+
+    <!-- instruction strings-->
+    <string name="setup_instructions">To complete setup of your device, please provide your Home Network\'s credentials.</string>
+
+    <string name="hint_ssid">Network Name</string>
+    <string name="hint_password">Password</string>
+
+    <!--provisioning process-->
+    <string name="prov_step_1">Sending Wi-Fi credentials</string>
+    <string name="prov_step_2">Applying Wi-Fi connection</string>
+    <string name="prov_step_3">Checking provisioning status</string>
+    <string name="error_session_creation">Failed to create session</string>
+    <string name="error_prov_step_1">Failed to send Wi-Fi credentials</string>
+    <string name="error_prov_step_2">Failed to apply Wi-Fi credentials</string>
+    <string name="error_prov_step_3">Failed to provisioning device</string>
+    <string name="error_network_not_found">Network not found.</string>
+    <string name="error_authentication_failed">Wi-Fi Authentication failed.</string>
+    <string name="error_provisioning">Error Provisioning. Please try again later.</string>
+</resources>

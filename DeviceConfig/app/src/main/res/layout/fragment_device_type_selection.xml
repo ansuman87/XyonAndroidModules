@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".ui.fragment.DeviceTypeSelectionFragment">
+
+    <ListView
+        android:id="@+id/simple_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:choiceMode="singleChoice"
+
+        android:divider="#000"
+        android:dividerHeight="4dp" />
+    <!--android:listSelector="@drawable/selector_device_type_list"-->
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_next"
+        android:layout_width="@dimen/bottom_button_height"
+        android:layout_height="@dimen/bottom_button_height"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+
+        app:iconGravity="textStart"
+        app:iconPadding="0dp"
+        app:icon="@drawable/ic_baseline_arrow_forward_ios_24"
+        app:iconTint="@android:color/white" />
+        <!--android:text="@string/button_next"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textColor="@android:color/white"-->
+
+</RelativeLayout>
