@@ -17,6 +17,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.espressif.provisioning.DeviceConnectionEvent
 import com.espressif.provisioning.ESPConstants
+import com.espressif.provisioning.ESPConstants.SecurityType
 import com.espressif.provisioning.ESPProvisionManager
 import com.espressif.provisioning.WiFiAccessPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -41,6 +42,8 @@ class WifiOnlyViewModel @Inject constructor(
     application: Application
 ) : AndroidViewModel(application) {
 
+    private val selectedSecurityType: SecurityType = SecurityType.SECURITY_2
+
     /********* Related to DeviceTypeSelectionFragment*******/
     private val _selectedDeviceType = mutableStateOf<DeviceType>(DeviceType.NONE)
     val selectedDeviceType: State<DeviceType> = _selectedDeviceType
@@ -59,8 +62,11 @@ class WifiOnlyViewModel @Inject constructor(
     private val wifiManager = application.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
     private val locationManager = application.applicationContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
-    private val _retrievedPopStateFlow = MutableStateFlow("")
+    private val _retrievedPopStateFlow = MutableStateFlow("")  // TODO: probably, replace by normal variable
     val retrievedPopStateFlow = _retrievedPopStateFlow.asStateFlow()
+
+    private val _retrievedUnameStateFlow = MutableStateFlow("")   // TODO: probably, replace by normal variable
+    val retrievedUnameStateFlow = _retrievedUnameStateFlow.asStateFlow()
 
     private val _provisionModeStateFlow = MutableStateFlow(ProvisionMode.NONE)
     val provisionModeStateFlow = _provisionModeStateFlow.asStateFlow()
@@ -85,6 +91,7 @@ class WifiOnlyViewModel @Inject constructor(
     fun resetConnectedDeviceFrag(){
         _retrievedPopStateFlow.value = ""
         _retrievedSsidStateFlow.value = ""
+        _retrievedUnameStateFlow.value = ""
         _connectedDeviceSsidStateFlow.value = ""
         _toBeConnectedDeviceSsidStateFlow.value = ""
         _provisionModeStateFlow.value = ProvisionMode.NONE
@@ -161,9 +168,18 @@ class WifiOnlyViewModel @Inject constructor(
                                         ConnectDeviceUiEvent.ShowSnackbarError(
                                             "Scan returned some null/empty values: ${result.message}"
                                         ))
+                                    if(selectedSecurityType == SecurityType.SECURITY_2 && result.data.username.isEmpty()) {
+                                        _connectedDeviceUiStateFlow.value = ConnectDeviceUiState.SHOW_DOWNLOADING_FAILED_DIALOG
+                                        _connectedDeviceUiEventFlow.emit(
+                                            ConnectDeviceUiEvent.ShowSnackbarError(
+                                                "Scan returned some null/empty values: ${result.message}"
+                                            ))
+                                    }
                                 } else {
                                     _retrievedPopStateFlow.value = result.data.pop
                                     _retrievedSsidStateFlow.value = result.data.ssid
+                                    if (selectedSecurityType == SecurityType.SECURITY_2)
+                                        _retrievedUnameStateFlow.value = result.data.username
                                     _connectedDeviceUiStateFlow.value = ConnectDeviceUiState.SHOW_WIFI_BLE_DIALOG
                                 }
                             }
@@ -438,14 +454,18 @@ class WifiOnlyViewModel @Inject constructor(
     fun createEspDevice(provisionMode: ProvisionMode){
         when(provisionMode){
             ProvisionMode.WIFI -> {
-                provisionManager.createESPDevice(ESPConstants.TransportType.TRANSPORT_SOFTAP, ESPConstants.SecurityType.SECURITY_1)
-                provisionManager.espDevice.proofOfPossession = _retrievedPopStateFlow.value
-                provisionManager.espDevice.deviceName = _connectedDeviceSsidStateFlow.value
+                provisionManager.createESPDevice(ESPConstants.TransportType.TRANSPORT_SOFTAP, selectedSecurityType)
+                provisionManager.espDevice.proofOfPossession = retrievedPopStateFlow.value
+                provisionManager.espDevice.deviceName = connectedDeviceSsidStateFlow.value
+                if (selectedSecurityType == SecurityType.SECURITY_2)
+                    provisionManager.espDevice.userName = retrievedUnameStateFlow.value
             }
             ProvisionMode.BLUETOOTH -> {
-                provisionManager.createESPDevice(ESPConstants.TransportType.TRANSPORT_BLE, ESPConstants.SecurityType.SECURITY_1)
+                provisionManager.createESPDevice(ESPConstants.TransportType.TRANSPORT_BLE, selectedSecurityType)
                 provisionManager.espDevice.proofOfPossession = _retrievedPopStateFlow.value
                 provisionManager.espDevice.deviceName = _connectedDeviceSsidStateFlow.value
+                if (selectedSecurityType == SecurityType.SECURITY_2)
+                    provisionManager.espDevice.userName = retrievedUnameStateFlow.value
             }
             ProvisionMode.NONE -> {
                 //do nothing
