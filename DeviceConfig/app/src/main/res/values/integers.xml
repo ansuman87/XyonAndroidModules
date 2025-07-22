@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="max_length_pwd">63</integer>
+    <integer name="max_length_ssid">32</integer>
+    <integer name="delay_showing_progress_indicator_in_ms">500</integer>
+</resources>

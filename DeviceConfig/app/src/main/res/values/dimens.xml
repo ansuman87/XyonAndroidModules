@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="list_item_size">16sp</dimen>
+    <dimen name="generic_margin">16dp</dimen>
+    <dimen name="dist_lock_rssi_widgets">20dp</dimen>
+    <dimen name="tv_height_below_list">62dp</dimen>
+    <dimen name="bottom_button_height">64dp</dimen>
+    <dimen name="bottom_button_width">64dp</dimen>
+
+</resources>

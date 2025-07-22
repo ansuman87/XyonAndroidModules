@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_wifi_ble"
+    app:startDestination="@id/connectDeviceFragment2">
+
+    <fragment
+        android:id="@+id/connectDeviceFragment2"
+        android:name="in.co.xyon.application.android.module.deviceconfig.ui.fragment.ConnectDeviceFragment"
+        android:label="ConnectDeviceFragment"
+        tools:layout="@layout/fragment_device_connect">
+
+    </fragment>
+</navigation>

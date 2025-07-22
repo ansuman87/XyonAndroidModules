@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_wifi_only"
+    app:startDestination="@id/deviceTypeSelectionFragment">
+
+    <fragment
+        android:id="@+id/deviceTypeSelectionFragment"
+        android:name="in.co.xyon.application.android.module.deviceconfig.ui.fragment.DeviceTypeSelectionFragment"
+        android:label="fragment_deviceTypSel"
+        tools:layout="@layout/fragment_device_type_selection" >
+        <action
+            android:id="@+id/action_devTypSelFrag_to_connDevFrag"
+            app:destination="@id/connectDeviceFragment"
+            app:enterAnim="@anim/fragment_transition_from_right"
+            app:exitAnim="@anim/fragment_transition_to_left"
+            app:popEnterAnim="@anim/fragment_transition_from_left"
+            app:popExitAnim="@anim/fragment_transition_to_right"
+            app:popUpTo="@id/deviceTypeSelectionFragment"
+            app:popUpToInclusive="false"/> <!-- removes all transactions till this transaction inclusively-->
+    </fragment>
+    <fragment
+        android:id="@+id/connectDeviceFragment"
+        android:name="in.co.xyon.application.android.module.deviceconfig.ui.fragment.ConnectDeviceFragment"
+        android:label="fragment_deviceConn"
+        tools:layout="@layout/fragment_device_connect" >
+        <!--action
+            android:id="@+id/action_getPopFrag_to_devTypSelFrag"
+            app:destination="@+id/deviceTypeSelectionFragment"
+            app:enterAnim="@anim/nav_default_pop_enter_anim"
+            app:exitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@id/deviceTypeSelectionFragment"
+            app:popUpToInclusive="true"
+            /-->
+        <!--action
+            android:id="@+id/action_searchFragment_to_homeFragment"
+            app:destination="@id/homeFragment" /-->
+        <action
+            android:id="@+id/action_connDevFragment_to_wifiScanListFragment"
+            app:destination="@id/wifiScanListFragment"
+            app:popUpTo="@id/deviceTypeSelectionFragment"
+            app:popUpToInclusive="false"
+            app:enterAnim="@anim/fragment_transition_from_right"
+            app:exitAnim="@anim/fragment_transition_to_left"
+            app:popEnterAnim="@anim/fragment_transition_from_left"
+            app:popExitAnim="@anim/fragment_transition_to_right"
+            />
+        <action
+            android:id="@+id/action_connDevFragment_to_wifiConfigFragment"
+            app:destination="@+id/wifiConfigFragment"
+            app:popUpTo="@id/deviceTypeSelectionFragment"
+            app:popUpToInclusive="false"
+            app:enterAnim="@anim/fragment_transition_from_right"
+            app:exitAnim="@anim/fragment_transition_to_left"
+            app:popEnterAnim="@anim/fragment_transition_from_left"
+            app:popExitAnim="@anim/fragment_transition_to_right"/>
+        <!---->
+    </fragment>
+
+    <fragment
+        android:id="@+id/wifiConfigFragment"
+        android:name="in.co.xyon.application.android.module.deviceconfig.ui.fragment.WifiConfigFragment"
+        android:label="fragment_wifi_config"
+        tools:layout="@layout/fragment_wifi_config" >
+        <action
+            android:id="@+id/action_wifiConfigFrag_to_provFrag"
+            app:destination="@id/provisioningFragment"
+            app:popUpTo="@id/deviceTypeSelectionFragment"
+            app:popUpToInclusive="false"
+            app:enterAnim="@anim/fragment_transition_from_right"
+            app:exitAnim="@anim/fragment_transition_to_left"
+            app:popEnterAnim="@anim/fragment_transition_from_left"
+            app:popExitAnim="@anim/fragment_transition_to_right"
+            />
+    </fragment>
+
+    <fragment
+        android:id="@+id/wifiScanListFragment"
+        android:name="in.co.xyon.application.android.module.deviceconfig.ui.fragment.WifiScanListFragment"
+        android:label="fragment_wifiScanList"
+        tools:layout="@layout/fragment_wifi_scan_list" >
+        <action
+            android:id="@+id/action_wifiScanListFrag_to_provFrag"
+            app:destination="@id/provisioningFragment"
+            app:popUpTo="@id/deviceTypeSelectionFragment"
+            app:popUpToInclusive="false"
+            app:enterAnim="@anim/fragment_transition_from_right"
+            app:exitAnim="@anim/fragment_transition_to_left"
+            app:popEnterAnim="@anim/fragment_transition_from_left"
+            app:popExitAnim="@anim/fragment_transition_to_right"
+            />
+    </fragment>
+
+    <fragment
+        android:id="@+id/provisioningFragment"
+        android:name="in.co.xyon.application.android.module.deviceconfig.ui.fragment.ProvisioningFragment"
+        android:label="ProvisioningFragment"
+        tools:layout="@layout/fragment_provisioning">
+
+    </fragment>
+
+    <!--<fragment
+        android:id="@+id/deviceHandshakingFragment"
+        android:name="in.co.xyon.application.android.module.deviceconfig.ui.fragment.DeviceHandshakingFragment"
+        android:label="fragment_device_handshaking"
+        tools:layout="@layout/fragment_device_handshaking" >
+        &lt;!&ndash;action
+            android:id="@+id/action_responsFragment_to_searchFragment"
+            app:destination="@id/searchFragment" /&ndash;&gt;
+    </fragment>-->
+</navigation>
