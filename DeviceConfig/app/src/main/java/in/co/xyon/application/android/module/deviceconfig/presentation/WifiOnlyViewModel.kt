@@ -151,6 +151,7 @@ class WifiOnlyViewModel @Inject constructor(
                                 ConnectDeviceUiEvent.ShowSnackbarError(
                                 "Error scanning: ${result.message}"
                             ))
+                            Timber.e("scanAndGetPop: Error: device ssid with pop and username retrieval")
                         }
                         is RequestResult.Success -> {
                             if(result.data == null){
@@ -160,6 +161,7 @@ class WifiOnlyViewModel @Inject constructor(
                                     ConnectDeviceUiEvent.ShowSnackbarError(
                                     "Scan returned null/empty value: ${result.message}"
                                 ))
+                                Timber.e("scanAndGetPop: Error: device ssid with pop and username retrieved null values")
                             }else{
                                 if(result.data.ssid.isEmpty() || result.data.pop.isEmpty()){  //resource.data.ssid.isEmpty() ||
                                         //_getPopStateFlow.update { it.copy(isLoading =  false, showWifiBleDialog = false) }
@@ -175,12 +177,15 @@ class WifiOnlyViewModel @Inject constructor(
                                                 "Scan returned some null/empty values: ${result.message}"
                                             ))
                                     }
+                                    Timber.e("scanAndGetPop: Error: device ssid with pop and username retrieved null values")
                                 } else {
                                     _retrievedPopStateFlow.value = result.data.pop
                                     _retrievedSsidStateFlow.value = result.data.ssid
                                     if (selectedSecurityType == SecurityType.SECURITY_2)
                                         _retrievedUnameStateFlow.value = result.data.username
                                     _connectedDeviceUiStateFlow.value = ConnectDeviceUiState.SHOW_WIFI_BLE_DIALOG
+                                    Timber.d("scanAndGetPop: device ssid with pop and username retrieved")
+                                    Timber.d("scanAndGetPop: device: ssid=${result.data.ssid}, pop=${result.data.pop}, username=${result.data.username}")
                                 }
                             }
 

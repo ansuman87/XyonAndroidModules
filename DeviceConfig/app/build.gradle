@@ -52,7 +52,7 @@ dependencies {
     implementation "androidx.navigation:navigation-dynamic-features-fragment:$nav_version"
 
     // espressif provisioning library
-    implementation 'com.github.espressif:esp-idf-provisioning-android:lib-2.2.1'
+    implementation 'com.github.espressif:esp-idf-provisioning-android:lib-2.2.3'
 
     // eventbus as required by the espressif provisioning library
     implementation 'org.greenrobot:eventbus:3.3.1'

@@ -16,7 +16,7 @@ class GetQRScanResult
             try {
                 emit(RequestResult.Loading())
                 delay(2000L)
-                emit(RequestResult.Success(QRScanResult( "PROV_0FF0B8", "wifiprov","abcd1234")))  //
+                emit(RequestResult.Success(QRScanResult( "PROV_2646A4", "user1","pass_xy01")))  //
             } catch (e: Exception){
                 emit(RequestResult.Error(message = e.localizedMessage?:"Unknown Error"))
             }
