@@ -66,14 +66,14 @@
         <action
             android:id="@+id/action_wifiConfigFrag_to_provFrag"
             app:destination="@id/provisioningFragment"
-            app:popUpTo="@id/deviceTypeSelectionFragment"
-            app:popUpToInclusive="false"
             app:enterAnim="@anim/fragment_transition_from_right"
             app:exitAnim="@anim/fragment_transition_to_left"
             app:popEnterAnim="@anim/fragment_transition_from_left"
             app:popExitAnim="@anim/fragment_transition_to_right"
             />
     </fragment>
+<!--    app:popUpTo="@id/deviceTypeSelectionFragment"-->
+<!--    app:popUpToInclusive="false"-->
 
     <fragment
         android:id="@+id/wifiScanListFragment"
@@ -83,14 +83,14 @@
         <action
             android:id="@+id/action_wifiScanListFrag_to_provFrag"
             app:destination="@id/provisioningFragment"
-            app:popUpTo="@id/deviceTypeSelectionFragment"
-            app:popUpToInclusive="false"
             app:enterAnim="@anim/fragment_transition_from_right"
             app:exitAnim="@anim/fragment_transition_to_left"
             app:popEnterAnim="@anim/fragment_transition_from_left"
             app:popExitAnim="@anim/fragment_transition_to_right"
             />
     </fragment>
+<!--    app:popUpTo="@id/deviceTypeSelectionFragment"-->
+<!--    app:popUpToInclusive="false"-->
 
     <fragment
         android:id="@+id/provisioningFragment"
@@ -98,6 +98,12 @@
         android:label="ProvisioningFragment"
         tools:layout="@layout/fragment_provisioning">
 
+        <action
+            android:id="@+id/action_provisioningFragment_to_deviceTypeSelectionFragment"
+            app:destination="@id/deviceTypeSelectionFragment"
+            app:popUpTo="@id/deviceTypeSelectionFragment"
+            app:popUpToInclusive="true"
+            />
     </fragment>
 
     <!--<fragment

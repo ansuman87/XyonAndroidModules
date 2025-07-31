@@ -82,7 +82,8 @@ class WifiScanListFragment : Fragment() , View.OnClickListener{
 
     override fun onResume() {
         super.onResume()
-        getWifiList()
+        if (viewModel.listWifiAp.size == 0)
+            getWifiList()
     }
 
     private fun observeUiState(){
@@ -211,7 +212,7 @@ class WifiScanListFragment : Fragment() , View.OnClickListener{
         if (wifiAp.security != ESPConstants.WIFI_OPEN.toInt()) {
             showJoinNetworkDialog(wifiAp.wifiName)
         }
-        else {
+        else {  // TODO: Check out, if this is absolutely required. We don't want an ESP open network (AP) ever. Right?
             val network = ProvisionNetwork(wifiAp.wifiName)
             viewModel.setSelectedNetwork(network)
             navigateToNextFragment()

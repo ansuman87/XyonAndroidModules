@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import com.espressif.provisioning.ESPConstants
 import com.espressif.provisioning.ESPProvisionManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -218,7 +219,7 @@ class ProvisioningFragment : Fragment(), View.OnClickListener {
                 .setTitle(resources.getString(R.string.dialog_title_device_disconnected))
                 .setMessage(resources.getString(R.string.dialog_message_device_disconnected))
                 .setPositiveButton(resources.getString(R.string.ok)) { dialog, which ->
-                    leaveFragment()
+                    leaveFragmentAndGoToStart()
                     dialog.dismiss()
                 }
                 .setCancelable(false)
@@ -231,13 +232,24 @@ class ProvisioningFragment : Fragment(), View.OnClickListener {
         Snackbar.make(binding.root, resources.getString(
             R.string.snackbar_message_provision_success
         ), Snackbar.LENGTH_LONG).show()
-        leaveFragment()
+//        leaveFragment()
+        leaveFragmentAndGoToStart()
     }
 
-    private fun leaveFragment() {
+    private fun leaveFragmentAndGoToStart() {
+        resetCompleteProvData()
+        viewModel.endSessionAndCloseConnection()
+        findNavController().navigate(R.id.action_provisioningFragment_to_deviceTypeSelectionFragment)
+    }
+
+    private fun resetCompleteProvData() {
         viewModel.resetConnectedDeviceFrag()
         viewModel.resetScanListFragment()
         viewModel.resetProvisioningFragment()
+    }
+
+    private fun goToPreviousFragment() {
+        viewModel.resetProvisioningFragmentStateOnly()
         navController.popBackStack()
     }
 
@@ -249,6 +261,6 @@ class ProvisioningFragment : Fragment(), View.OnClickListener {
     }
 
     override fun onClick(v: View?) {
-        leaveFragment()
+        goToPreviousFragment()
     }
 }

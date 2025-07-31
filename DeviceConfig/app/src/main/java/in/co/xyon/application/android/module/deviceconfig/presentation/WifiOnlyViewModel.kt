@@ -18,9 +18,10 @@ import androidx.lifecycle.viewModelScope
 import com.espressif.provisioning.DeviceConnectionEvent
 import com.espressif.provisioning.ESPConstants
 import com.espressif.provisioning.ESPConstants.SecurityType
-import com.espressif.provisioning.ESPProvisionManager
+//import com.espressif.provisioning.ESPProvisionManager
 import com.espressif.provisioning.WiFiAccessPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
+import `in`.co.xyon.application.android.module.deviceconfig.domain.lib.ESPProvisionManagerMod
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.greenrobot.eventbus.EventBus
@@ -448,7 +449,7 @@ class WifiOnlyViewModel @Inject constructor(
         }
     }*/
 
-    private val provisionManager = ESPProvisionManager.getInstance(application)
+    private val provisionManager = ESPProvisionManagerMod.getInstance(application)
 
     private val _espHandshakeStateFlow = MutableStateFlow<EspHandshakeState>(EspHandshakeState.NONE)
     val espHandshakeStateFlow = _espHandshakeStateFlow.asStateFlow()
@@ -736,6 +737,13 @@ class WifiOnlyViewModel @Inject constructor(
         unregisterEventBus()
     }
 
+    fun resetProvisioningFragmentStateOnly() {
+        _provisioningUiStateFlow.value = ProvisioningState()
+        _provisionFailureReason = null
+        _isProvisioningSuccessful = false
+        cancelDoProvisioningJob()
+    }
+
     @ExperimentalCoroutinesApi
     fun startProvisioning() {
         cancelDoProvisioningJob()
@@ -835,6 +843,11 @@ class WifiOnlyViewModel @Inject constructor(
 
     private fun cancelDoProvisioningJob() {
         doProvisioningJob?.cancel()
+    }
+
+
+    fun endSessionAndCloseConnection() {
+        provisionManager.espDevice.closeSessionAndDisableWifiNetwork()
     }
 
 

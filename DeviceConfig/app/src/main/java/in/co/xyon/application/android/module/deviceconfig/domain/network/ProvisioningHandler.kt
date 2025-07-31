@@ -4,10 +4,11 @@ import `in`.co.xyon.application.android.module.deviceconfig.domain.model.Provisi
 import `in`.co.xyon.application.android.module.deviceconfig.domain.model.RequestResult
 import android.content.Context
 import com.espressif.provisioning.ESPConstants
-import com.espressif.provisioning.ESPProvisionManager
+//import com.espressif.provisioning.ESPProvisionManager
 import com.espressif.provisioning.WiFiAccessPoint
 import com.espressif.provisioning.listeners.ProvisionListener
 import com.espressif.provisioning.listeners.WiFiScanListener
+import `in`.co.xyon.application.android.module.deviceconfig.domain.lib.ESPProvisionManagerMod
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
@@ -29,7 +30,7 @@ class ProvisioningHandler(
                 //TODO:......
             }*/
 
-            val provisionManager = ESPProvisionManager.getInstance(appContext)
+            val provisionManager = ESPProvisionManagerMod.getInstance(appContext)
 
             provisionManager.espDevice.scanNetworks( object: WiFiScanListener {
                 override fun onWifiListReceived(wifiList: ArrayList<WiFiAccessPoint>) {
@@ -48,7 +49,7 @@ class ProvisioningHandler(
 
     @ExperimentalCoroutinesApi
     fun doProvisioning(ssid: String, pwd: String) = callbackFlow<ProvisionResult> {
-        val provisionManager = ESPProvisionManager.getInstance(appContext)
+        val provisionManager = ESPProvisionManagerMod.getInstance(appContext)
         Timber.d("start provisioning...")
         provisionManager.espDevice.provision(ssid, pwd, object : ProvisionListener {
             override fun createSessionFailed(e: Exception?) {

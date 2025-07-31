@@ -20,9 +20,6 @@ class GetQRScanResult
             } catch (e: Exception){
                 emit(RequestResult.Error(message = e.localizedMessage?:"Unknown Error"))
             }
-
-
-
         }
     }
 }

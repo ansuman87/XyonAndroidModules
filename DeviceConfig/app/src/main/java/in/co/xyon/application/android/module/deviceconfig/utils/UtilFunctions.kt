@@ -10,19 +10,30 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import android.Manifest
 import android.os.Build
+import kotlinx.coroutines.flow.FlowCollector
 
-fun <T> Fragment.collectLatestLifecycleFlow(flow: Flow<T>, collect: suspend (T) -> Unit) {
-    lifecycleScope.launch {
-        repeatOnLifecycle(Lifecycle.State.STARTED) {
-            flow.collectLatest(collect)
+fun <T> Fragment.collectLatestLifecycleFlow(flow: Flow<T>, action: suspend (T) -> Unit) {
+    viewLifecycleOwner.lifecycleScope.launch {
+        viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            flow.collectLatest(action)
         }
     }
 }
 
+//fun <T> Fragment.collectLifecycleFlow(flow: Flow<T>, action: suspend (T) -> Unit) {
+//    lifecycleScope.launch {
+//        repeatOnLifecycle(Lifecycle.State.STARTED) {
+//            flow.collect(action)
+//        }
+//    }
+//}
+
 fun <T> Fragment.collectLifecycleFlow(flow: Flow<T>, collect: suspend (T) -> Unit) {
-    lifecycleScope.launch {
-        repeatOnLifecycle(Lifecycle.State.STARTED) {
-            flow.collect(collect)
+    viewLifecycleOwner.lifecycleScope.launch { // Use viewLifecycleOwner for Fragments
+        viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            flow.collect { value ->
+                collect(value) // Call your provided lambda here
+            }
         }
     }
 }
