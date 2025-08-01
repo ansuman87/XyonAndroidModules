@@ -15,7 +15,7 @@ class GetQRScanResult
         return flow {
             try {
                 emit(RequestResult.Loading())
-                delay(2000L)
+//                delay(2000L)   // emulating network call
                 emit(RequestResult.Success(QRScanResult( "PROV_2646A4", "user1","pass_xy01")))  //
             } catch (e: Exception){
                 emit(RequestResult.Error(message = e.localizedMessage?:"Unknown Error"))

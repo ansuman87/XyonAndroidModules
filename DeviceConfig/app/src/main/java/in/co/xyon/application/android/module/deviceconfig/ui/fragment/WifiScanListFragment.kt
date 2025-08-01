@@ -1,5 +1,6 @@
 package `in`.co.xyon.application.android.module.deviceconfig.ui.fragment
 
+import android.content.Context
 import `in`.co.xyon.application.android.module.deviceconfig.R
 import `in`.co.xyon.application.android.module.deviceconfig.databinding.DialogWifiNetworkBinding
 import `in`.co.xyon.application.android.module.deviceconfig.databinding.FragmentWifiScanListBinding
@@ -17,6 +18,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -30,6 +32,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.permissionx.guolindev.PermissionX
 import dagger.hilt.android.AndroidEntryPoint
+import `in`.co.xyon.application.android.module.deviceconfig.presentation.states.ProvisioningStateTracker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import timber.log.Timber
 
@@ -53,7 +56,22 @@ class WifiScanListFragment : Fragment() , View.OnClickListener{
 
     private var joinNetworkDialog : AlertDialog?= null
     private var deviceDCDialog : AlertDialog?= null
+    private var dialogCancellation: AlertDialog ?= null
 
+    private val onBackPressedCallback: OnBackPressedCallback =
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (viewModel.wifiScanListUiStateFlow.value == WifiScanListUiState.LIST_LOADING)
+                    showCancellationDialog()
+                else leaveFragment()
+            }
+        }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        // Add the callback to the dispatcher. It will be enabled when the fragment is started.
+        requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -96,6 +114,7 @@ class WifiScanListFragment : Fragment() , View.OnClickListener{
                     binding.tvJoinNetwork.visibility = View.GONE
                     binding.btnRefresh.visibility = View.VISIBLE
                     binding.tvErrorMsg.visibility = View.GONE
+                    binding.btnBack.isEnabled = true
                 }
                 WifiScanListUiState.LIST_FOUND -> {
 
@@ -110,6 +129,7 @@ class WifiScanListFragment : Fragment() , View.OnClickListener{
                     binding.tvJoinNetwork.visibility = View.VISIBLE
                     binding.btnRefresh.visibility = View.VISIBLE
                     binding.tvErrorMsg.visibility = View.GONE
+                    binding.btnBack.isEnabled = true
                 }
                 WifiScanListUiState.LIST_FOUND_ERROR -> {
                     wifiListAdapter?.wifiApList = viewModel.listWifiAp
@@ -120,6 +140,7 @@ class WifiScanListFragment : Fragment() , View.OnClickListener{
                     binding.tvJoinNetwork.visibility = View.GONE
                     binding.btnRefresh.visibility = View.VISIBLE
                     binding.tvErrorMsg.visibility = View.VISIBLE
+                    binding.btnBack.isEnabled = true
                 }
                 WifiScanListUiState.LIST_LOADING -> {
                     binding.loadingWidget.visibility = View.VISIBLE
@@ -127,6 +148,7 @@ class WifiScanListFragment : Fragment() , View.OnClickListener{
                     binding.btnRefresh.visibility = View.GONE
                     binding.tvJoinNetwork.visibility = View.GONE
                     binding.tvErrorMsg.visibility = View.GONE
+                    binding.btnBack.isEnabled = false
                 }
                 WifiScanListUiState.DEVICE_DISCONNECTED -> {
                     binding.loadingWidget.visibility = View.GONE
@@ -237,6 +259,24 @@ class WifiScanListFragment : Fragment() , View.OnClickListener{
                 .setCancelable(false)
         deviceDCDialog = dialogBuilder.create()
         deviceDCDialog?.show()
+    }
+
+    private fun showCancellationDialog() {
+        val dialogBuilder =
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Scanning in progress")
+                .setMessage("Exiting now may leave your device in an unstable state. We recommend you wait for the process to complete. Would you like to Wait?")
+                .setPositiveButton("Yes, wait") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .setNegativeButton("No, Exit") { dialog, _ ->
+                    leaveFragment()
+                    dialog.dismiss()
+                }
+                .setCancelable(false)
+
+        dialogCancellation = dialogBuilder.create()
+        dialogCancellation?.show()
     }
 
     private fun showJoinNetworkDialog(ssid: String="") {
@@ -368,7 +408,8 @@ class WifiScanListFragment : Fragment() , View.OnClickListener{
 
     override fun onDestroyView() {
         super.onDestroyView()
-        /** required for avoiding memory leak? **/
+        deviceDCDialog = null
+        dialogCancellation = null
         _navController = null
         _binding = null
 

@@ -22,11 +22,11 @@ class MainActivity : AppCompatActivity() {
         //setContentView(R.layout.activity_main)
     }
 
-    override fun onBackPressed() {
-        //super.onBackPressed()
-        //do nothing on backpressed
-        if (supportFragmentManager.fragments.last()?.childFragmentManager?.fragments?.get(0) is DeviceTypeSelectionFragment)
-            super.onBackPressed()
-
-    }
+//    override fun onBackPressed() {
+//        super.onBackPressed()
+//        //do nothing on backpressed
+////        if (supportFragmentManager.fragments.last()?.childFragmentManager?.fragments?.get(0) is DeviceTypeSelectionFragment)
+////            super.onBackPressed()
+//
+//    }
 }

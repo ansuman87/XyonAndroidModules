@@ -1,5 +1,6 @@
 package `in`.co.xyon.application.android.module.deviceconfig.ui.fragment
 
+import android.content.Context
 import `in`.co.xyon.application.android.module.deviceconfig.R
 import `in`.co.xyon.application.android.module.deviceconfig.databinding.FragmentProvisioningBinding
 import `in`.co.xyon.application.android.module.deviceconfig.presentation.WifiOnlyViewModel
@@ -9,6 +10,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -37,7 +39,30 @@ class ProvisioningFragment : Fragment(), View.OnClickListener {
 
     private lateinit var provisionManager: ESPProvisionManager
 
-    private var alertDialog: AlertDialog?= null
+    private var dialogProvIncomplete: AlertDialog?= null
+    private var dialogCancellation: AlertDialog ?= null
+
+    private val onBackPressedCallback: OnBackPressedCallback =
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (viewModel.provisioningUiStateFlow.value.sendWifiConfig == ProvisioningStateTracker.FAILURE ||
+                    viewModel.provisioningUiStateFlow.value.wifiConfigApplied == ProvisioningStateTracker.FAILURE ||
+                    viewModel.provisioningUiStateFlow.value.provisioningStatus == ProvisioningStateTracker.FAILURE) {
+                    leaveFragAndGoToPrevFrag()
+                } else if (viewModel.provisioningUiStateFlow.value.createSession == ProvisioningStateTracker.FAILURE)
+                    leaveFragmentAndGoToStart()
+                else {
+                    if (dialogCancellation == null || !dialogCancellation!!.isShowing)
+                        showCancellationDialog()
+                }
+            }
+        }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        // Add the callback to the dispatcher. It will be enabled when the fragment is started.
+        requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -74,7 +99,7 @@ class ProvisioningFragment : Fragment(), View.OnClickListener {
                     binding.layoutProvProcess.ivTick1.visibility = View.VISIBLE
                     binding.layoutProvProcess.provProgress1.visibility = View.GONE
                     binding.tvProvError.visibility = View.GONE
-                    //binding.btnBack.isEnabled = true
+//                    binding.btnBack.isEnabled = true
                 }
                 ProvisioningStateTracker.UNDERWAY -> {
                     binding.layoutProvProcess.ivTick1.visibility = View.GONE
@@ -82,7 +107,7 @@ class ProvisioningFragment : Fragment(), View.OnClickListener {
                     binding.layoutProvProcess.tvProvError1.text = resources.getString(R.string.prov_step_1)
                     binding.layoutProvProcess.tvProvError1.visibility = View.VISIBLE
                     binding.tvProvError.visibility = View.GONE
-                    //binding.btnBack.isEnabled = false
+                    binding.btnBack.isEnabled = false
                 }
                 ProvisioningStateTracker.FAILURE -> {
                     binding.layoutProvProcess.ivTick1.setImageResource(R.drawable.ic_error)
@@ -91,7 +116,7 @@ class ProvisioningFragment : Fragment(), View.OnClickListener {
                     binding.layoutProvProcess.tvProvError1.text = resources.getString(R.string.error_session_creation)
                     binding.layoutProvProcess.tvProvError1.visibility = View.VISIBLE
                     binding.tvProvError.visibility = View.VISIBLE
-                    //binding.btnBack.isEnabled = true
+                    binding.btnBack.isEnabled = true
                 }
                 ProvisioningStateTracker.SUCCESS -> {
                 }
@@ -109,7 +134,7 @@ class ProvisioningFragment : Fragment(), View.OnClickListener {
                     binding.layoutProvProcess.tvProvError1.text = resources.getString(R.string.prov_step_1)
                     binding.layoutProvProcess.tvProvError1.visibility = View.VISIBLE
                     binding.tvProvError.visibility = View.GONE
-                    //binding.btnBack.isEnabled = false
+                    binding.btnBack.isEnabled = false
                 }
                 ProvisioningStateTracker.FAILURE -> {
                     binding.layoutProvProcess.ivTick1.setImageResource(R.drawable.ic_error)
@@ -143,7 +168,7 @@ class ProvisioningFragment : Fragment(), View.OnClickListener {
                     binding.layoutProvProcess.tvProvError2.text = resources.getString(R.string.prov_step_2)
                     binding.layoutProvProcess.tvProvError2.visibility = View.VISIBLE
                     binding.tvProvError.visibility = View.GONE
-                    //binding.btnBack.isEnabled = false
+                    binding.btnBack.isEnabled = false
                 }
                 ProvisioningStateTracker.FAILURE -> {
                     binding.layoutProvProcess.ivTick2.setImageResource(R.drawable.ic_error)
@@ -152,7 +177,7 @@ class ProvisioningFragment : Fragment(), View.OnClickListener {
                     binding.layoutProvProcess.tvProvError2.text = resources.getString(R.string.error_prov_step_2)
                     binding.layoutProvProcess.tvProvError2.visibility = View.VISIBLE
                     binding.tvProvError.visibility = View.VISIBLE
-                    //binding.btnBack.isEnabled = true
+                    binding.btnBack.isEnabled = true
                 }
                 ProvisioningStateTracker.SUCCESS -> {
                     binding.layoutProvProcess.ivTick2.setImageResource(R.drawable.ic_checkbox_on)
@@ -177,7 +202,7 @@ class ProvisioningFragment : Fragment(), View.OnClickListener {
                     binding.layoutProvProcess.tvProvError3.text = resources.getString(R.string.prov_step_3)
                     binding.layoutProvProcess.tvProvError3.visibility = View.VISIBLE
                     binding.tvProvError.visibility = View.GONE
-                    //binding.btnBack.isEnabled = false
+                    binding.btnBack.isEnabled = false
                 }
                 ProvisioningStateTracker.FAILURE -> {
                     var errMsg = resources.getString(R.string.error_prov_step_3)
@@ -194,7 +219,7 @@ class ProvisioningFragment : Fragment(), View.OnClickListener {
                     binding.layoutProvProcess.tvProvError3.text = errMsg
                     binding.layoutProvProcess.tvProvError3.visibility = View.VISIBLE
                     binding.tvProvError.visibility = View.VISIBLE
-                    //binding.btnBack.isEnabled = false
+                    binding.btnBack.isEnabled = true
                 }
                 ProvisioningStateTracker.SUCCESS -> {
                     binding.layoutProvProcess.ivTick3.setImageResource(R.drawable.ic_checkbox_on)
@@ -224,8 +249,26 @@ class ProvisioningFragment : Fragment(), View.OnClickListener {
                 }
                 .setCancelable(false)
 
-        alertDialog = dialogBuilder.create()
-        alertDialog?.show()
+        dialogProvIncomplete = dialogBuilder.create()
+        dialogProvIncomplete?.show()
+    }
+
+    private fun showCancellationDialog() {
+        val dialogBuilder =
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Provisioning in progress")
+                .setMessage("Exiting now may leave your device in an unstable state. We recommend you wait for the process to complete. Would you like to Wait?")
+                .setPositiveButton("Yes, wait") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .setNegativeButton("No, Exit") { dialog, _ ->
+                    leaveFragmentAndGoToStart()
+                    dialog.dismiss()
+                }
+                .setCancelable(false)
+
+        dialogCancellation = dialogBuilder.create()
+        dialogCancellation?.show()
     }
 
     private fun showSuccessSnackbarAndLeave(){
@@ -248,19 +291,23 @@ class ProvisioningFragment : Fragment(), View.OnClickListener {
         viewModel.resetProvisioningFragment()
     }
 
-    private fun goToPreviousFragment() {
+    private fun leaveFragAndGoToPrevFrag() {
         viewModel.resetProvisioningFragmentStateOnly()
         navController.popBackStack()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        /** required for avoiding memory leak? **/
+        dialogProvIncomplete = null
+        dialogCancellation = null
         _navController = null
         _binding = null
     }
 
     override fun onClick(v: View?) {
-        goToPreviousFragment()
+        if (viewModel.provisioningUiStateFlow.value.createSession == ProvisioningStateTracker.FAILURE)
+            leaveFragmentAndGoToStart()
+        else
+            leaveFragAndGoToPrevFrag()
     }
 }

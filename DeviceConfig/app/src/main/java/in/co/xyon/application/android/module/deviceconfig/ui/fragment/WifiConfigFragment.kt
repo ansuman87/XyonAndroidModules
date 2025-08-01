@@ -153,7 +153,7 @@ class WifiConfigFragment : Fragment(), View.OnClickListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        /** required for avoiding memory leak? **/
+        deviceDCDialog = null
         _navController = null
         _binding = null
 

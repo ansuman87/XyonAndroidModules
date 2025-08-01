@@ -12,11 +12,13 @@ import `in`.co.xyon.application.android.module.deviceconfig.utils.getNetworkConn
 import `in`.co.xyon.application.android.module.deviceconfig.utils.getQRScanningPermissions
 import `in`.co.xyon.application.android.module.deviceconfig.utils.getWifiScanPermissions
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.*
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -44,8 +46,23 @@ class ConnectDeviceFragment : Fragment(), View.OnClickListener{
     private var dialogProvisioningMode: AlertDialog ?= null
     private var dialogDownloadFailed: AlertDialog ?= null
     private var dialogRetryConn: AlertDialog ?= null
+    private var dialogCancellation: AlertDialog ?= null
     //val WIFI_SETTINGS_ACTIVITY_REQUEST = 112
     //private lateinit var resultLauncher: ActivityResultLauncher<Intent>
+
+    private val onBackPressedCallback: OnBackPressedCallback =
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (dialogCancellation == null || !dialogCancellation!!.isShowing)
+                    showCancellationDialog()
+            }
+        }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        // Add the callback to the dispatcher. It will be enabled when the fragment is started.
+        requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -116,24 +133,28 @@ class ConnectDeviceFragment : Fragment(), View.OnClickListener{
                     binding.loadingText.text = resources.getString(R.string.loading_message_fetching_pop)
                     binding.loadingText.visibility = VISIBLE
                     binding.btnRefresh.visibility = GONE
+                    binding.btnBack.isEnabled = false
                 }
                 ConnectDeviceUiState.IS_SCANNING -> {
                     binding.loadingWidget.visibility = VISIBLE
                     binding.loadingText.text = resources.getString(R.string.loading_message_scanning)
                     binding.loadingText.visibility = VISIBLE
                     binding.btnRefresh.visibility = GONE
+                    binding.btnBack.isEnabled = false
                 }
                 ConnectDeviceUiState.IS_CONNECTING -> {
                     binding.loadingWidget.visibility = VISIBLE
                     binding.loadingText.text = resources.getString(R.string.loading_message_connecting)
                     binding.loadingText.visibility = VISIBLE
                     binding.btnRefresh.visibility = GONE
+                    binding.btnBack.isEnabled = false
                 }
                 ConnectDeviceUiState.HAS_DISCONNECTED ->{
                     binding.loadingText.text = "Disconnected..."
                     binding.loadingText.visibility = VISIBLE
                     binding.loadingWidget.visibility = GONE
                     binding.btnRefresh.visibility = VISIBLE
+                    binding.btnBack.isEnabled = true
                     //TODO: dialog to scan and connect again and connect or go back ...
                     // reset the toBeConnectedSsid to "" if reconnect
                 }
@@ -142,6 +163,7 @@ class ConnectDeviceFragment : Fragment(), View.OnClickListener{
                     binding.loadingText.visibility = GONE
                     binding.loadingWidget.visibility = GONE
                     binding.btnRefresh.visibility = GONE
+                    binding.btnBack.isEnabled = true
                     /*if(viewModel.deviceSsidStateFlow.value == viewModel.connectedDeviceSsidStateFlow.value){
                         viewModel.createEspDevice()
                         navigateToNextFragment()
@@ -153,6 +175,7 @@ class ConnectDeviceFragment : Fragment(), View.OnClickListener{
                     binding.loadingText.visibility = GONE
                     binding.loadingWidget.visibility = GONE
                     binding.btnRefresh.visibility = GONE
+                    binding.btnBack.isEnabled = false
                     showProvisionWifiConfirmationDialog()
                 }
                 ConnectDeviceUiState.SHOW_DOWNLOADING_FAILED_DIALOG -> {
@@ -160,6 +183,7 @@ class ConnectDeviceFragment : Fragment(), View.OnClickListener{
                     binding.loadingText.visibility = GONE
                     binding.loadingWidget.visibility = GONE
                     binding.btnRefresh.visibility = GONE
+                    binding.btnBack.isEnabled = true
                     showDownloadingFailedDialog()
                 }
             }
@@ -419,6 +443,24 @@ class ConnectDeviceFragment : Fragment(), View.OnClickListener{
         dialogRetryConn?.show()
     }
 
+    private fun showCancellationDialog() {
+        val dialogBuilder =
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Connection in progress")
+                .setMessage("It is advised to wait till the process is complete. Otherwise, you might have to restart the provisioning process again. Would you like to Wait?")
+                .setPositiveButton("Yes, wait") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .setNegativeButton("No, Exit") { dialog, _ ->
+                    leaveFragment()
+                    dialog.dismiss()
+                }
+                .setCancelable(false)
+
+        dialogCancellation = dialogBuilder.create()
+        dialogCancellation?.show()
+    }
+
     @SuppressLint("MissingPermission")
     private fun sendHandshake(){
         if(viewModel.toBeConnectedDeviceSsidStateFlow.value == viewModel.connectedDeviceSsidStateFlow.value){
@@ -501,7 +543,10 @@ class ConnectDeviceFragment : Fragment(), View.OnClickListener{
 
     override fun onDestroyView() {
         super.onDestroyView()
-        /** required for avoiding memory leak? **/
+        dialogCancellation = null
+        dialogDownloadFailed = null
+        dialogRetryConn = null
+        dialogProvisioningMode = null
         _navController = null
         _binding = null
 
